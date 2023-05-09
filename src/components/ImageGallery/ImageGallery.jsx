@@ -2,7 +2,6 @@ import { Component } from 'react';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import fetchImage from 'components/Utils/API';
 import Loader from 'components/Loader/Loader';
-import Button from '../Button/Button';
 import css from './ImageGallery.module.css';
 
 class ImageGallery extends Component {
@@ -10,48 +9,39 @@ class ImageGallery extends Component {
     status: 'idle',
     data: [],
     error: null,
-    page: 1,
   };
 
+ 
   componentDidUpdate(prevProps, prevState) {
     const lastSearchRequest = prevProps.searchRequest;
     const newSearchRequest = this.props.searchRequest;
-    const lastPage = prevState.page;
-    const newPage = this.state.page;
+    const lastPage = prevProps.page;
+    const newPage = this.props.page;
+    
+    console.log("this.props.page in iageGallery", this.props.page)
 
     this.clearData(lastSearchRequest, newSearchRequest);
 
     if (lastSearchRequest !== newSearchRequest || lastPage !== newPage) {
       this.setState({ status: 'pending' });
+
       fetchImage(newSearchRequest, newPage)
-        .then(response => {
-          if (response.data.totalHits !== 0) {
-            this.setState(prevState => ({
-              data: [...this.state.data, ...response.data.hits],
-              status: 'resolved',
-              totalHits: response.data.totalHits,
-            }));
-          } else {
-            this.setState({
-              error: `${this.state.newSearchRequest} not found!`,
-              status: 'rejected',
-            });
-          }
-        })
-        .catch(error => this.setState({ error, status: 'rejected' }));
+        .then(data =>
+          this.setState({ data: [...this.state.data, ...data.hits] })
+        )
+        .then(this.setState({ status: 'resolved' }))
+        .catch(error => this.setState({ status: 'rejected', error }));
     }
   }
 
+
   clearData = (oldRequest, newRequest) => {
     if (oldRequest !== newRequest) {
-      this.setState({ data: [], page: 1 });
+      this.setState({ data: [] });
     }
   };
 
-  handleLoadMoreButton = () => {
-    const nextPage = this.state.page + 1;
-    this.setState({ page: nextPage });
-  };
+ 
 
   render() {
     const { data, status } = this.state;
@@ -78,7 +68,6 @@ class ImageGallery extends Component {
               );
             })}
           </ul>
-          <Button handleButton={this.handleLoadMoreButton} />
         </>
       );
     }

@@ -1,12 +1,22 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'https://pixabay.com/api',
-});
+async function fetchImage(toSearch, page) {
+  const URL = 'https://pixabay.com/api/';
+  const KEY = '?key=34196559-a18bb514e6ee4bb855d37fd2b';
+  const FILTER = '&image_type=photo&orientation=horizontal&safesearch=true';
+  const pagination = `&page=${page}&per_page=${12}`;
+  const request = `${URL}${KEY}&q=${toSearch}${FILTER}${pagination}`;
 
-export default function fetchImage(toSearch, page) {
-  console.log(toSearch)
-  return api.get(
-    `/?q=${toSearch}&key=34196559-a18bb514e6ee4bb855d37fd2b&per_page=12&page=${page}`
-  );
+  const getImgData = await axios.get(request);
+  const parsedImgData = await getImgData.data;
+
+  if (parsedImgData.hits.length === 0) {
+    return Promise.reject(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
+
+  return parsedImgData;
 }
+
+export default fetchImage;
