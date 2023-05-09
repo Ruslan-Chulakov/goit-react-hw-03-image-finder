@@ -7,14 +7,16 @@ async function fetchImage(toSearch, page, toggleloader) {
   const pagination = `&page=${page}&per_page=${12}`;
   const request = `${URL}${KEY}&q=${toSearch}${FILTER}${pagination}`;
 
-  try {
-    const response = await axios.get(request)
-    toggleloader()
-    return response.data
-  } catch (error) {
-    toggleloader()
-    console.log(error.message)
+  const getImgData = await axios.get(request);
+  const parsedImgData = await getImgData.data;
+  await toggleloader();
+
+  if (parsedImgData.hits.length === 0) {
+    return Promise.reject(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
   }
+  return parsedImgData
 }
 
 export default fetchImage;
