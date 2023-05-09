@@ -18,23 +18,33 @@ class ImageGallery extends Component {
     const newSearchRequest = this.props.searchRequest;
     const lastPage = prevState.page;
     const newPage = this.state.page;
-     
-    if (lastSearchRequest !== newSearchRequest || lastPage !== newPage) {
-      this.clearData(lastSearchRequest, newSearchRequest);
-      this.setState({ status: 'pending' });
 
+    this.clearData(lastSearchRequest, newSearchRequest);
+
+    if (lastSearchRequest !== newSearchRequest || lastPage !== newPage) {
+      this.setState({ status: 'pending' });
       fetchImage(newSearchRequest, newPage)
-        .then(data =>
-          this.setState({ data: [...this.state.data, ...data.hits] })
-        )
-        .then(this.setState({ status: 'resolved' }))
-        .catch(error => this.setState({ status: 'rejected', error }));
+        .then(response => {
+          if (response.data.totalHits !== 0) {
+            this.setState(prevState => ({
+              data: [...this.state.data, ...response.data.hits],
+              status: 'resolved',
+              totalHits: response.data.totalHits,
+            }));
+          } else {
+            this.setState({
+              error: `${this.state.newSearchRequest} not found!`,
+              status: 'rejected',
+            });
+          }
+        })
+        .catch(error => this.setState({ error, status: 'rejected' }));
     }
   }
 
   clearData = (oldRequest, newRequest) => {
     if (oldRequest !== newRequest) {
-      this.setState({ data: [] });
+      this.setState({ data: [], page: 1 });
     }
   };
 
@@ -51,7 +61,7 @@ class ImageGallery extends Component {
 
     if (status === 'pending') {
       return <Loader />;
-    };
+    }
 
     if (status === 'resolved') {
       return (

@@ -11,15 +11,15 @@ export class App extends Component {
 
   handleSearchSubmit = (searchRequest) => {
     this.setState({ searchRequest });
-    this.setState({ page: 1})
+    // this.setState({ })
   }
 
   render() {
-    const { searchRequest } = this.state;
+    const { searchRequest, page } = this.state;
 
     return <div className={css.App}>
       <Searchbar onSubmit={this.handleSearchSubmit} />
-      <ImageGallery searchRequest={searchRequest} />
+      <ImageGallery searchRequest={searchRequest} page={page} />
     </div>;
   }
   
