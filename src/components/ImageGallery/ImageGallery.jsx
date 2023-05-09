@@ -18,8 +18,6 @@ class ImageGallery extends Component {
     const lastPage = prevProps.page;
     const newPage = this.props.page;
     
-    console.log("this.props.page in iageGallery", this.props.page)
-
     this.clearData(lastSearchRequest, newSearchRequest);
 
     if (lastSearchRequest !== newSearchRequest || lastPage !== newPage) {

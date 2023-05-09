@@ -16,7 +16,6 @@ class Searchbar extends Component {
 
     const { onSubmit } = this.props;
     const treamedRequest = this.state.request.trim();
-    console.log('searchbar befor submit')
     onSubmit(treamedRequest);
 
     this.setState({ request: '' });
