@@ -14,9 +14,10 @@ class Searchbar extends Component {
   handleSubmit = (evt) => {
     evt.preventDefault()
 
-    const { onSubmit } = this.props;
+    const { onSubmit, toggleLoader } = this.props;
     const treamedRequest = this.state.request.trim();
     onSubmit(treamedRequest);
+    toggleLoader();
 
     this.setState({ request: '' });
   }

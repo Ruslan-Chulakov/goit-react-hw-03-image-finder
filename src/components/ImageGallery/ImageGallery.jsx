@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import fetchImage from 'components/Utils/API';
-import Loader from 'components/Loader/Loader';
 import css from './ImageGallery.module.css';
 
 class ImageGallery extends Component {
@@ -17,13 +16,13 @@ class ImageGallery extends Component {
     const newSearchRequest = this.props.searchRequest;
     const lastPage = prevProps.page;
     const newPage = this.props.page;
+    const { toggleLoader } = this.props;
     
     this.clearData(lastSearchRequest, newSearchRequest);
 
     if (lastSearchRequest !== newSearchRequest || lastPage !== newPage) {
-      this.setState({ status: 'pending' });
 
-      fetchImage(newSearchRequest, newPage)
+      fetchImage(newSearchRequest, newPage, toggleLoader)
         .then(data =>
           this.setState({ data: [...this.state.data, ...data.hits] })
         )
@@ -47,9 +46,9 @@ class ImageGallery extends Component {
     // if (status === 'idle') {
     // };
 
-    if (status === 'pending') {
-      return <Loader />;
-    }
+    // if (status === 'pending') {
+    //   return <Loader />;
+    // }
 
     if (status === 'resolved') {
       return (
